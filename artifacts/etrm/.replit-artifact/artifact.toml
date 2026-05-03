@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Power Trading ETRM"
+version = "1.0.0"
+id = "artifacts/etrm"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21562
+
+[services.development]
+run = "pnpm --filter @workspace/etrm run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/etrm", "run", "build" ]
+publicDir = "artifacts/etrm/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21562"
+BASE_PATH = "/"

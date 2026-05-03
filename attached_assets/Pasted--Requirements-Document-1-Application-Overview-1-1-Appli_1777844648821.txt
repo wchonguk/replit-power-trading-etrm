@@ -1,0 +1,236 @@
+# Requirements Document
+
+## 1. Application Overview
+
+### 1.1 Application Name
+Power Trading ETRM
+
+### 1.2 Application Description
+A clean, professional, SaaS-style energy trading platform that enables traders, middle office, and back office users to capture and manage trades, monitor positions and exposure, perform trade validation and approvals, manage confirmations and settlement preparation, and view P&L and risk insights.
+
+## 2. Users and Usage Scenarios
+
+### 2.1 Target Users
+- Traders: Execute and capture energy trades
+- Middle Office: Validate trades and monitor risk exposure
+- Back Office: Manage confirmations and settlement processes
+
+### 2.2 Core Usage Scenarios
+- Capture OTC and exchange trades with full trade details
+- Monitor real-time positions and P&L across books and products
+- Validate and approve trades before confirmation
+- Track confirmation status and reconcile with counterparties
+- Prepare settlement data and export for payment processing
+- View market data and manage master data entities
+
+## 3. Page Structure and Functionality
+
+### 3.1 Page Structure
+```
+Power Trading ETRM
+├── Dashboard (Home)
+├── Trade Blotter
+├── Positions
+├── Validation & Approvals
+├── Confirmations
+├── Settlement
+├── Market Data
+├── Master Data
+└── Insights
+```
+
+### 3.2 Dashboard (Home)
+**Purpose**: Provide overview of trading activity, positions, and key metrics
+
+**Components**:
+- Summary Cards
+  - Total Position (MWh): Display aggregated net position
+  - Daily P&L: Show profit/loss for current day
+  - Open Exposure: Display total exposure amount
+  - Trades Pending Validation: Count of trades awaiting approval
+- Charts
+  - Position Over Time: Line chart showing position trends
+  - P&L Over Time: Line chart showing profit/loss trends
+  - Exposure by Counterparty: Bar chart showing exposure distribution
+- Recent Trades Table: Display last 10 trades with key fields (Trade ID, Date, Counterparty, Product, Volume, Price, Status)
+- Quick Actions
+  - Capture Trade button: Opens trade capture modal
+  - Upload Broker File button: Opens file upload dialog
+  - View Positions button: Navigates to Positions page
+
+### 3.3 Trade Blotter Page
+**Purpose**: View, search, filter, and capture all trades
+
+**Components**:
+- Trade Table
+  - Columns: Trade ID, Trade Date, Counterparty, Product, Delivery Period, Volume (MWh), Price, Status
+  - Features: Search bar, filter dropdowns (Status, Counterparty, Product, Date range), column sorting
+  - Row actions: View details, Edit, Delete
+- Capture Trade Button: Opens trade capture modal
+- Trade Capture Modal
+  - Fields: Counterparty (dropdown), Product (dropdown), Volume (number input), Price (number input), Trade Date (date picker), Delivery Start (date picker), Delivery End (date picker), Buy/Sell (radio buttons), Book (dropdown)
+  - Actions: Save, Cancel
+
+### 3.4 Positions Page
+**Purpose**: View aggregated positions across different dimensions
+
+**Components**:
+- Position Aggregation Tabs
+  - By Book: Table showing net position per book
+  - By Product: Table showing net position per product
+  - By Delivery: Table showing net position per delivery date
+- Position Charts
+  - Position Over Time: Line chart showing position evolution
+  - Position by Product: Bar chart showing position distribution
+- Table Columns: Book/Product/Delivery Date, Net Position (MWh), Market Value
+
+### 3.5 Validation & Approvals Page
+**Purpose**: Review and approve trades before confirmation
+
+**Components**:
+- Trade Validation Queue Table
+  - Columns: Trade ID, Trade Date, Counterparty, Product, Volume, Price, Submitted By, Status
+  - Row actions: Approve, Reject, Amend
+- Trade Detail Panel: Shows full trade details when row selected
+- Action Buttons
+  - Approve: Changes status to Approved
+  - Reject: Opens rejection reason modal
+  - Amend: Opens edit modal
+- Audit Trail Section: Shows history of validation actions (User, Action, Timestamp, Comments)
+
+### 3.6 Confirmations Page
+**Purpose**: Track and manage trade confirmations
+
+**Components**:
+- Confirmation Status Table
+  - Columns: Trade ID, Counterparty, Confirmation Date, Status (Pending/Sent/Matched/Disputed), Actions
+  - Status badges with color coding
+- Upload Confirmation Button: Opens file upload dialog
+- Match & Reconcile Section
+  - Compare trade details with received confirmations
+  - Highlight discrepancies
+  - Mark as Matched or Disputed
+
+### 3.7 Settlement Page
+**Purpose**: Prepare and export settlement data
+
+**Components**:
+- Settlement Table
+  - Columns: Trade ID, Counterparty, Settlement Date, Value, Currency, Status
+  - Filter by date range and counterparty
+- Export Button: Download settlement data as CSV/Excel
+- Settlement Summary Cards: Total settlement value, number of settlements, pending settlements
+
+### 3.8 Market Data Page
+**Purpose**: View and manage market price curves
+
+**Components**:
+- Price Curve Chart: Line chart showing price curves for selected products
+- Product Selector: Dropdown to choose product
+- Date Range Selector: Choose time period for curve display
+- Upload Price Data Button: Opens file upload dialog
+- Refresh Button: Reload latest market data
+
+### 3.9 Master Data Page
+**Purpose**: Manage reference data entities
+
+**Components**:
+- Entity Tabs: Counterparties, Books, Products
+- Counterparties Tab
+  - Table columns: ID, Name, Short Code, Status
+  - Actions: Add, Edit, Delete
+- Books Tab
+  - Table columns: Book ID, Book Name, Description
+  - Actions: Add, Edit, Delete
+- Products Tab
+  - Table columns: Product ID, Product Name, Unit, Status
+  - Actions: Add, Edit, Delete
+
+### 3.10 Insights Page
+**Purpose**: Display AI-generated insights (UI only)
+
+**Components**:
+- Insight Cards: Display mock insights with title, description, and timestamp
+- Generate Insights Button: Trigger insight generation (UI action only)
+- Filter Options: By category (Risk, Opportunity, Market)
+
+## 4. Business Rules and Logic
+
+### 4.1 Trade Status Workflow
+- New trade starts with status: Pending Validation
+- After approval: status changes to Approved
+- After confirmation sent: status changes to Confirmed
+- After settlement: status changes to Settled
+
+### 4.2 Position Calculation
+- Buy trades: add to position
+- Sell trades: subtract from position
+- Net position = sum of all buy volumes - sum of all sell volumes
+
+### 4.3 P&L Calculation
+- P&L = (Current Market Price - Trade Price) × Volume
+- Daily P&L = sum of P&L for all trades executed on that day
+
+### 4.4 Validation Rules
+- All required fields must be filled
+- Delivery end date must be after delivery start date
+- Volume must be positive number
+- Price must be positive number
+
+### 4.5 Color Coding
+- Green: Profit, positive values
+- Red: Loss, negative values
+- Amber: Pending status, warnings
+
+## 5. Exceptions and Edge Cases
+
+| Scenario | Handling |
+|----------|----------|
+| Empty trade blotter | Display message: No trades found |
+| No pending validations | Display message: All trades validated |
+| Failed file upload | Show error message with retry option |
+| Duplicate trade ID | Prevent save and show error message |
+| Missing counterparty data | Disable trade capture until counterparty added |
+| Zero or negative volume | Show validation error |
+| Invalid date range | Show validation error |
+
+## 6. Acceptance Criteria
+
+1. All 9 pages are accessible via sidebar navigation
+2. Dashboard displays summary cards with mock data
+3. Trade blotter table shows trades with all specified columns
+4. Trade capture modal opens and closes properly
+5. Search and filter functions work on trade blotter
+6. Position page displays aggregated positions by book, product, and delivery
+7. Validation queue shows trades with approve/reject/amend actions
+8. Confirmation page displays status badges correctly
+9. Settlement table displays trade settlement data
+10. Market data page shows price curve chart
+11. Master data page allows viewing counterparties, books, and products
+12. Insights page displays insight cards
+13. All charts render correctly with mock data
+14. Color coding follows specified rules (green for profit, red for loss, amber for pending)
+15. Responsive design works on desktop and tablet
+16. Top bar includes user menu
+17. All modals open and close properly
+18. All buttons and actions have appropriate visual feedback
+
+## 7. Out of Scope for This Release
+
+- Backend API implementation
+- Database integration
+- Real-time data updates
+- User authentication and authorization
+- Azure API integration
+- Azure SQL connection
+- Microsoft Fabric integration
+- M365 integrations
+- Actual AI insight generation logic
+- Email notifications
+- Advanced reporting features
+- Multi-currency support
+- Automated settlement processing
+- Real market data feeds
+- Trade execution via exchanges
+- Risk calculation engines
+- Compliance and regulatory reporting
